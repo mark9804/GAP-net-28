@@ -47,7 +47,7 @@ def train(epoch, learning_rate, logger):
     for i in range(batch_num):
         gt_batch = shuffle_crop(train_set, batch_size)
         gt = Variable(gt_batch).cuda().float()
-        y = gen_meas_torch(gt, Phi_batch, is_training = True)
+        y = gen_meas_torch(gt, Phi_batch)
         optimizer.zero_grad()
         model_out = model(y, Phi_batch, Phi_s_batch)
         Loss = mse(model_out[-1], gt) + 0.5*mse(model_out[-2], gt) + 0.5*mse(model_out[-3], gt)
@@ -59,11 +59,12 @@ def train(epoch, learning_rate, logger):
     logger.info("===> Epoch {} Complete: Avg. Loss: {:.6f} time: {:.2f}".format(epoch, epoch_loss/batch_num, (end - begin)))
 
 def test(epoch, logger):
-    Phi_batch_test = (Phi_batch[0,:,:,:]).expand([batch_size_test, nC, H, W]).cuda().float()
-    Phi_s_batch_test = (Phi_s_batch[0,:,:]).expand([batch_size_test, H, W]).cuda().float()
+    meas_width = Phi_batch.shape[3]
+    Phi_batch_test = (Phi_batch[0,:,:,:]).expand([batch_size_test, nC, H, meas_width]).cuda().float()
+    Phi_s_batch_test = (Phi_s_batch[0,:,:]).expand([batch_size_test, H, meas_width]).cuda().float()
     psnr_list, ssim_list = [], []
     test_gt = test_data.cuda().float()
-    test_y = gen_meas_torch(test_gt, Phi_batch_test, is_training = False)
+    test_y = gen_meas_torch(test_gt, Phi_batch_test)
     model.eval()
     begin = time.time()
     with torch.no_grad():

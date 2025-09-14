@@ -80,17 +80,29 @@ def At(y,Phi):
     x = temp*Phi
     return x
 
-def shift(inputs,step=2):
+def shift(inputs, step=2):
     [bs, nC, row, col] = inputs.shape
+    output = torch.zeros(bs, nC, row, col + (nC - 1) * step).cuda().float()
     for i in range(nC):
-        inputs[:,i,:,:] = torch.roll(inputs[:,i,:,:], shifts=step*i, dims=2)
-    return inputs
+        output[:, i, :, step * i:step * i + col] = inputs[:, i, :, :]
+    return output
 
-def shift_back(inputs,step=2):
+def shift_back(inputs, step=2):  # input [bs,256,310]  output [bs, 28, 256, 256]
+    """
+
+    Args:
+        inputs (_type_): _description_
+        step (int, optional): _description_. Defaults to 2.
+
+    Returns:
+        _type_: _description_
+    """
     [bs, nC, row, col] = inputs.shape
+    output_width = col - (nC - 1) * step
+    output = torch.zeros(bs, nC, row, output_width).cuda().float()
     for i in range(nC):
-        inputs[:,i,:,:] = torch.roll(inputs[:,i,:,:], shifts=(-1)*step*i, dims=2)
-    return inputs
+        output[:, i, :, :] = inputs[:, i, :, step * i:step * i + output_width]
+    return output
 	
 
 def shuffle_crop(train_data, batch_size):
@@ -110,14 +122,8 @@ def shuffle_crop(train_data, batch_size):
     return gt_batch
 
 
-def gen_meas_torch(data_batch, Phi_batch, is_training=True):
-    [batch_size, nC, H, W] = data_batch.shape
-    step = 2
-    if is_training is False:
-        Phi_batch = (Phi_batch[0,:,:,:]).expand([batch_size, nC, H, W]).cuda().float()
-    gt_batch = torch.zeros(batch_size, nC, H, W+step*(nC-1)).cuda()
-    gt_batch[:,:,:,0:W] = data_batch
-    gt_shift_batch = shift(gt_batch)
+def gen_meas_torch(data_batch, Phi_batch):
+    gt_shift_batch = shift(data_batch)
     meas = torch.sum(Phi_batch*gt_shift_batch, 1)
     return meas
 

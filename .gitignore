@@ -1,0 +1,6 @@
+/model/
+/recon/
+Spectral_SCI/GAPnet_v1/model/
+Spectral_SCI/GAPnet_v1/recon/
+Spectral_SCI/Data/
+**/__pycache__/

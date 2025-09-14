@@ -66,11 +66,20 @@ class Unet(nn.Module):
         conv3 = self.dconv_down3(x)
 
         
-        x = self.upsample2(conv3)  
+        x = self.upsample2(conv3)
+        diffY = conv2.size()[2] - x.size()[2]
+        diffX = conv2.size()[3] - x.size()[3]
+        x = F.pad(x, [diffX // 2, diffX - diffX // 2,
+                        diffY // 2, diffY - diffY // 2])
+        # print("x.shape, conv2.shape: ", x.shape, conv2.shape)
         x = torch.cat([x, conv2], dim=1)
         
         x = self.dconv_up2(x)
-        x = self.upsample1(x)        
+        x = self.upsample1(x)
+        diffY = conv1.size()[2] - x.size()[2]
+        diffX = conv1.size()[3] - x.size()[3]
+        x = F.pad(x, [diffX // 2, diffX - diffX // 2,
+                        diffY // 2, diffY - diffY // 2])
         x = torch.cat([x, conv1], dim=1)       
 
         x = self.dconv_up1(x)  

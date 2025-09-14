@@ -10,7 +10,9 @@ from ssim_torch import ssim
 
 def generate_masks(mask_path, batch_size):
     nC = 28
-    mask = scio.loadmat(mask_path)
+    H = 256
+    W = 310
+    mask = sio.loadmat(mask_path)
     mask_3d_shift = mask['mask_3d_shift']
     mask_3d_shift = np.transpose(mask_3d_shift, [2, 0, 1])
     mask_3d_shift = torch.from_numpy(mask_3d_shift)
@@ -33,6 +35,8 @@ def LoadTraining(path):
         img_dict = sio.loadmat(scene_path)
         if "cast" in img_dict:
             img = img_dict['cast']/65536.
+        elif "img_expand" in img_dict:
+            img = img_dict['img_expand']/65536.
         img = img.astype(np.float32)
         imgs.append(img)
         print('Sence {} is loaded. {}'.format(i, scene_list[i]))

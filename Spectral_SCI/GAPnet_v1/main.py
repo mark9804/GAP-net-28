@@ -11,15 +11,15 @@ import datetime
 import os
 import numpy as np
 from torch.autograd import Variable
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 torch.backends.cudnn.enabled = True
 torch.backends.cudnn.benchmark = True
 if not torch.cuda.is_available():
     raise Exception('NO GPU!')
 
-data_path = "../Data/training_data/"  
-mask_path = "../Data/mask/mask_3d_shift.mat"
-test_path = "../Data/testing_data/" 
+data_path = "/root/gpufree-data/GAP-net/Spectral_SCI/Data/training_data/"  
+mask_path = "/root/gpufree-data/GAP-net/Spectral_SCI/Data/mask/mask_3d_shift.mat"
+test_path = "/root/gpufree-data/GAP-net/Spectral_SCI/Data/testing_data/" 
 
 batch_size = 5
 nC, H, W = 28, 256, 256

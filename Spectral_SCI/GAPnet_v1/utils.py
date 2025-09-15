@@ -88,15 +88,6 @@ def shift(inputs, step=2):
     return output
 
 def shift_back(inputs, step=2):  # input [bs,256,310]  output [bs, 28, 256, 256]
-    """
-
-    Args:
-        inputs (_type_): _description_
-        step (int, optional): _description_. Defaults to 2.
-
-    Returns:
-        _type_: _description_
-    """
     [bs, nC, row, col] = inputs.shape
     output_width = col - (nC - 1) * step
     output = torch.zeros(bs, nC, row, output_width).cuda().float()

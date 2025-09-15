@@ -25,8 +25,8 @@ batch_size = 5
 nC, H, W = 28, 256, 256
 last_train = 0                        # for finetune
 model_save_filename = ''                 # for finetune
-max_epoch = 500
-learning_rate = 0.0004
+max_epoch = 400
+learning_rate = 0.001
 epoch_sam_num = 5000
 batch_num = int(np.floor(epoch_sam_num/batch_size))
 
